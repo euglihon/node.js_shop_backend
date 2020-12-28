@@ -6,20 +6,25 @@ const path = require('path');
 const app = express();
 
 
-// add local routes
-const adminRoutes = require('./routes/admin');
+// global configuration parameters
+app.set('view engine', 'pug'); // add template engine
+app.set('views', 'views'); // add default template folder
+
+
+// local routes and local func
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 
-//add POST routes parsing
+// POST routes parsing
 app.use(bodyParser.urlencoded({extended: false}));
 
-//add load static files
+// load static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 // add admin route
-app.use('/admin', adminRoutes);
+app.use('/admin', adminData.routes);
 
 // add shop routes
 app.use(shopRoutes);
@@ -28,8 +33,8 @@ app.use(shopRoutes);
 app.use('/', (req, res) => {
     res
     .status(404)
-    .sendFile(path.join(__dirname, 'views', '404.html'));
+    .render('404.pug', {docTitle: 'Page not found'});
 });
 
 
-app.listen(8080);
+app.listen(8050);

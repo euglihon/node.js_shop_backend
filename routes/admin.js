@@ -1,20 +1,30 @@
 const express = require('express');
-const path = require('path');
 
 
 const router = express.Router();
 
 
+const products = [];
+
+
 // /admin/add-product ==> GET
 router.get('/add-product', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'views', 'add-product.html'));    
+    res.render('add-product.pug', {
+        docTitle: 'Add Product', 
+        activePath: '/admin/add-product' // activePath ==> added class 'active' to main-layout
+    }); 
 }); 
 
 // /admin/add-product ==> POST
 router.post('/add-product', (req, res) => {
-    console.log(req.body);
+    // req.body.title ==> html input form data 
+    products.push(
+        {title: req.body.title},
+    );
     res.redirect('/');
+    console.log(products)
 }); 
 
 
-module.exports = router;
+exports.routes = router;
+exports.products = products;
