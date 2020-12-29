@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 
+const errorController = require('./controllers/error'); 
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.set('views', 'views'); // add default template folder
 
 
 // local routes and local func
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 
@@ -24,17 +25,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // add admin route
-app.use('/admin', adminData.routes);
+app.use('/admin', adminRoutes);
 
 // add shop routes
 app.use(shopRoutes);
 
-// add auto load 404 route
-app.use('/', (req, res) => {
-    res
-    .status(404)
-    .render('404.pug', {docTitle: 'Page not found'});
-});
+// add 404 route
+app.use('/', errorController.get404);
 
 
-app.listen(8050);
+app.listen(3000);
