@@ -22,7 +22,11 @@ module.exports = class Product {
         this.description = description;
         this.price = price;
         this.imageURL = imageURL;
+
+        // temporary product id
+        this.id =  Math.random().toString();
     }
+
 
     // push product to json file
     save() {
@@ -35,9 +39,19 @@ module.exports = class Product {
         });
     }
 
-    // static ==> return all product from db 
+
+    // static ==> return all products from db 
     static fetchAllProducts(callback) {
         getProductFromFile(callback);
+    }
+
+
+    // static ==> return one product detail from db 
+    static fetchProductDetail(id, callback) {
+        getProductFromFile( (products) => {
+            const product = products.find( (p) => p.id === id );            
+            callback(product);
+        });
     }
 }
 
