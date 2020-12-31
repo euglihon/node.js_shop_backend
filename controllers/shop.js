@@ -21,6 +21,20 @@ exports.getProducts = (req, res) => {
 };
 
 
+exports.getProductDetail = (req, res) => {
+    //  id - get url params --> /products/:id 
+    const productID = req.params.id;
+    Product.fetchProductDetail(productID, (product) => {     
+        res.render('shop/product-detail.pug', {
+            product: product,
+            docTitle: product.title,
+            activePath: '/products'  // activePath -- added class 'active' to layout.pug
+
+        });
+    });        
+};
+
+
 exports.getCart = (req, res) => {
     res.render('shop/cart.pug', {
         docTitle: 'Your Cart',
