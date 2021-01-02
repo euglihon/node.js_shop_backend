@@ -1,3 +1,4 @@
+const { error } = require("console");
 const fs = require("fs");
 const path = require("path");
 
@@ -40,6 +41,41 @@ module.exports = class Cart {
       fs.writeFile(filePath, JSON.stringify(cart), (error) => {
         console.log(error);
       });
+    });
+  }
+
+  static deleteProduct(id, productPrice) {
+    fs.readFile(filePath, (error, fileBody) => {
+      if (error) {
+        return;
+      }
+      // create copy cart
+      const updatedCart = { ...JSON.parse(fileBody) };
+      // find delete product
+      const product = updatedCart.products.find((product) => product.id === id);
+      // update copy cart include delete product
+      updatedCart.products = updatedCart.products.filter(
+        (product) => product.id !== id
+      );
+      // update price and quality
+      const productQuality = product.quality;
+      updatedCart.totalPrice =
+        updatedCart.totalPrice - productPrice * productQuality;
+      // write new cart object to file
+      fs.writeFile(filePath, JSON.stringify(updatedCart), (error) => {
+        console.log(error);
+      });
+    });
+  }
+
+  static getProducts(callback) {
+    fs.readFile(filePath, (error, fileBody) => {
+      const cart = JSON.parse(fileBody);
+      if (error) {
+        callback(null);
+      } else {
+        callback(cart);
+      }
     });
   }
 };
