@@ -1,30 +1,23 @@
-const express = require('express');
-
-
+const express = require("express");
+const adminController = require("../controllers/admin");
 const router = express.Router();
 
+// route ==> /admin/products ==> GET
+router.get("/products", adminController.getProducts);
 
-const products = [];
+// route ==> /admin/add-product ==> GET
+router.get("/add-product", adminController.getAddProduct);
 
+// route ==> /admin/add-product ==> POST
+router.post("/add-product", adminController.postAddProduct);
 
-// /admin/add-product ==> GET
-router.get('/add-product', (req, res) => {
-    res.render('add-product.pug', {
-        docTitle: 'Add Product', 
-        activePath: '/admin/add-product' // activePath ==> added class 'active' to main-layout
-    }); 
-}); 
+// route ==> /admin/edit-product/:productID ==> GET
+router.get("/edit-product/:productID", adminController.getEditProduct);
 
-// /admin/add-product ==> POST
-router.post('/add-product', (req, res) => {
-    // req.body.title ==> html input form data 
-    products.push(
-        {title: req.body.title},
-    );
-    res.redirect('/');
-    console.log(products)
-}); 
+// route ==> /admin/edit-product ==> POST
+router.post("/edit-product", adminController.postEditProduct);
 
+// route ==> /admin/delete-product ==> POST
+router.post("/delete-product", adminController.postDeleteProduct);
 
-exports.routes = router;
-exports.products = products;
+module.exports = router;
