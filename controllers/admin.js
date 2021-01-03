@@ -5,7 +5,7 @@ exports.getProducts = (req, res) => {
     res.render("admin/admin-product-list.pug", {
       prods: products,
       docTitle: "Admin products list",
-      activePath: "/admin/products", // activePath -- added class 'active' to layout.pug
+      activePath: "/admin/products",
     });
   });
 };
@@ -13,7 +13,7 @@ exports.getProducts = (req, res) => {
 exports.getAddProduct = (req, res) => {
   res.render("admin/edit-product.pug", {
     docTitle: "Add Product",
-    activePath: "/admin/add-product", // activePath -- added class 'active' to layout.pug
+    activePath: "/admin/add-product",
     editing: false,
   });
 };
@@ -41,7 +41,7 @@ exports.getEditProduct = (req, res) => {
       } else {
         res.render("admin/edit-product.pug", {
           docTitle: `Edit ${product.title}`,
-          activePath: "/admin/edit-product", // activePath -- added class 'active' to layout.pug
+          activePath: "/admin/edit-product",
           editing: Boolean(editParam), // string true to boolean true, js:)
           product: product,
         });
