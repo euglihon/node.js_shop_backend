@@ -28,4 +28,6 @@ app.use(shopRoutes);
 // add 404 route
 app.use("/", errorController.get404);
 
-app.listen(3000);
+app.listen((port = 3000), () => {
+  console.log(`server run http://localhost:${port}`);
+});
