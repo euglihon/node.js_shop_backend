@@ -9,25 +9,29 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  Product.fetchAllProducts((products) => {
-    res.render("shop/product-list.pug", {
-      prods: products,
-      docTitle: "Products list",
-      activePath: "/products",
-    });
-  });
+  Product.fetchAllProducts()
+    .then(([rows, fieldDbData]) => {
+      res.render("shop/product-list.pug", {
+        prods: rows,
+        docTitle: "Products list",
+        activePath: "/products",
+      });
+    })
+    .catch((error) => console.log(error));
 };
 
 exports.getProductDetail = (req, res) => {
   //  id - get url params --> /products/:id
   const productID = req.params.id;
-  Product.fetchProductDetail(productID, (product) => {
-    res.render("shop/product-detail.pug", {
-      product: product,
-      docTitle: product.title,
-      activePath: "/products",
-    });
-  });
+  Product.fetchProductDetail(productID)
+    .then(([product, filedDbData]) => {
+      res.render("shop/product-detail.pug", {
+        product: product[0],
+        docTitle: product[0].title,
+        activePath: "/products",
+      });
+    })
+    .catch((error) => console.log(error));
 };
 
 exports.getCart = (req, res) => {

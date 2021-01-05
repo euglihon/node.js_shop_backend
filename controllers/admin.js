@@ -23,8 +23,10 @@ exports.postAddProduct = (req, res) => {
   const { title, description, price, imageURL } = req.body;
   // create model element
   const product = new Product(null, title, description, price, imageURL); //null --> id element
-  product.save(); // class method, push product to DB
-  res.redirect("/products");
+  product
+    .save() // class method, push product to DB
+    .then(() => res.redirect("/products"))
+    .catch((error) => console.log(error));
 };
 
 exports.getEditProduct = (req, res) => {
