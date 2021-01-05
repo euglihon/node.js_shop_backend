@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const errorController = require("./controllers/error");
+const sequelize = require("./util/database");
 
 const app = express();
 
@@ -28,6 +29,12 @@ app.use(shopRoutes);
 // add 404 route
 app.use("/", errorController.get404);
 
-app.listen((port = 3000), () => {
-  console.log(`server run http://localhost:${port}`);
-});
+// automatic tables creation based on models
+sequelize
+  .sync()
+  .then((result) => {
+    // console.log(result);
+    // start app
+    app.listen(3002);
+  })
+  .catch((error) => console.log(error));

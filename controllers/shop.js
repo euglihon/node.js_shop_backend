@@ -9,10 +9,11 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  Product.fetchAllProducts()
-    .then(([rows, fieldDbData]) => {
+  // findAll -> sequelize basic method -- Select * FROM table_name --
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list.pug", {
-        prods: rows,
+        prods: products,
         docTitle: "Products list",
         activePath: "/products",
       });
@@ -23,11 +24,13 @@ exports.getProducts = (req, res) => {
 exports.getProductDetail = (req, res) => {
   //  id - get url params --> /products/:id
   const productID = req.params.id;
-  Product.fetchProductDetail(productID)
-    .then(([product, filedDbData]) => {
+
+  // findByPk -> sequelize basic method -- Select * FROM table_name WHERE id = productID --
+  Product.findByPk(productID)
+    .then((product) => {
       res.render("shop/product-detail.pug", {
-        product: product[0],
-        docTitle: product[0].title,
+        product: product,
+        docTitle: product.title,
         activePath: "/products",
       });
     })
