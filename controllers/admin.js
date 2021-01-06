@@ -1,8 +1,11 @@
 const Product = require("../models/product");
 
 exports.getProducts = (req, res) => {
-  // findAll -> sequelize basic method -- Select * FROM table_name --
-  Product.findAll()
+  // request object user
+  const userID = req.user.id;
+  // findAll -> sequelize basic method -- Select * FROM --
+  // search all user products
+  Product.findAll({ where: { userId: userID } })
     .then((products) => {
       res.render("admin/admin-product-list.pug", {
         prods: products,
@@ -35,6 +38,7 @@ exports.postAddProduct = (req, res) => {
     description: description,
     price: price,
     imageURL: imageURL,
+    userId: req.user.id, // add request object user
   })
     .then(() => {
       console.log("product is created");
