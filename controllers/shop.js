@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
+const CartItem = require("../models/cart-item");
 
 exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
@@ -38,38 +39,61 @@ exports.getProductDetail = (req, res) => {
 };
 
 exports.getCart = (req, res) => {
-  Cart.getProducts((cart) => {
-    Product.fetchAllProducts((products) => {
-      const cartProducts = [];
-
-      for (product of products) {
-        const cartProductData = cart.products.find(
-          (prod) => prod.id === product.id
-        );
-        if (cartProductData) {
-          cartProducts.push({
-            productData: product,
-            quality: cartProductData.quality,
-          });
-        }
-      }
-      res.render("shop/cart.pug", {
-        docTitle: "Your Cart",
-        activePath: "/cart",
-        products: cartProducts,
+  // request object user
+  req.user
+    .getCart()
+    .then((cart) => {
+      // getCart -> magic sequelize method
+      return cart.getProducts().then((products) => {
+        res.render("shop/cart.pug", {
+          docTitle: "Your Cart",
+          activePath: "/cart",
+          products: products,
+        });
       });
-    });
-  });
+    })
+    .catch((error) => console.log(error));
 };
 
 exports.postCart = (req, res) => {
-  //  id - post params --> /cart
+  //  productID - post params --> /cart
   const productID = req.body.productID;
-  // add product to cart
-  Product.fetchProductDetail(productID, (product) => {
-    Cart.addProduct(productID, product.price);
-  });
-  res.redirect("/cart");
+
+  let fetchedCart;
+  let newQuality = 1;
+
+  req.user
+    .getCart()
+    .then((cart) => {
+      fetchedCart = cart;
+      return cart.getProducts({ where: { id: productID } });
+    })
+    .then((products) => {
+      let product;
+
+      if (products.length > 0) {
+        product = products[0];
+      }
+
+      if (product) {
+        const oldQuantity = product.cartItem.quantity;
+        newQuality = oldQuantity + 1;
+        return product;
+      } else {
+        return Product.findByPk(productID);
+      }
+    })
+    .then((product) => {
+      return fetchedCart.addProduct(product, {
+        through: { quantity: newQuality },
+      });
+    })
+
+    .then(() => {
+      res.redirect("/cart");
+    })
+
+    .catch((error) => console.log(error));
 };
 
 exports.postDeleteCartItem = (req, res) => {
