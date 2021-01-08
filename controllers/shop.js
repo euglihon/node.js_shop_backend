@@ -1,6 +1,5 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
-const CartItem = require("../models/cart-item");
 
 exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
@@ -10,7 +9,6 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  // findAll -> sequelize basic method -- Select * FROM table_name --
   Product.findAll()
     .then((products) => {
       res.render("shop/product-list.pug", {
@@ -26,7 +24,6 @@ exports.getProductDetail = (req, res) => {
   //  id - get url params --> /products/:id
   const productID = req.params.id;
 
-  // findByPk -> sequelize basic method -- Select * FROM table_name WHERE id = productID --
   Product.findByPk(productID)
     .then((product) => {
       res.render("shop/product-detail.pug", {
@@ -39,11 +36,9 @@ exports.getProductDetail = (req, res) => {
 };
 
 exports.getCart = (req, res) => {
-  // request object user
   req.user
     .getCart()
     .then((cart) => {
-      // getCart -> magic sequelize method
       return cart.getProducts().then((products) => {
         res.render("shop/cart.pug", {
           docTitle: "Your Cart",
@@ -98,22 +93,61 @@ exports.postCart = (req, res) => {
 
 exports.postDeleteCartItem = (req, res) => {
   const productID = req.body.productID;
-  Product.fetchProductDetail(productID, (product) => {
-    Cart.deleteProduct(productID, product.price);
-    res.redirect("/cart");
-  });
+
+  req.user
+    .getCart()
+    .then((cart) => {
+      return cart.getProducts({ where: { id: productID } });
+    })
+    .then((products) => {
+      const product = products[0];
+      return product.cartItem.destroy();
+    })
+    .then(() => {
+      res.redirect("/cart");
+    })
+    .catch((error) => console.log(error));
 };
 
 exports.getOrders = (req, res) => {
-  res.render("shop/orders.pug", {
-    docTitle: "Your orders",
-    activePath: "/orders",
-  });
+  req.user
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      res.render("shop/orders.pug", {
+        docTitle: "Your orders",
+        activePath: "/orders",
+        orders: orders,
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
-exports.getCheckout = (req, res) => {
-  res.render("shop/checkout.pug", {
-    docTitle: "Checkout",
-    activePath: "/checkout",
-  });
+exports.postOrders = (req, res) => {
+  let fetchedCart;
+  req.user
+    .getCart()
+    .then((cart) => {
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then((products) => {
+      return req.user
+        .createOrder()
+        .then((order) => {
+          return order.addProducts(
+            products.map((product) => {
+              product.orderItem = { quantity: product.cartItem.quantity };
+              return product;
+            })
+          );
+        })
+        .catch((error) => console.log(error));
+    })
+    .then((result) => {
+      return fetchedCart.setProducts(null);
+    })
+    .then((result) => {
+      res.redirect("/orders");
+    })
+    .catch((error) => console.log(error));
 };

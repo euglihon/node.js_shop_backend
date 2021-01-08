@@ -20,10 +20,10 @@ router.post("/add-to-card", shopController.postCart);
 // route /cart-delete-item ==> POST
 router.post("/cart-delete-item", shopController.postDeleteCartItem);
 
-// route orders ==> GET
+// route /orders ==> GET
 router.get("/orders", shopController.getOrders);
 
-// route /checkout ==> GET
-router.get("/checkout", shopController.getCheckout);
+// route /create-order ==> post
+router.post("/create-order", shopController.postOrders);
 
 module.exports = router;
