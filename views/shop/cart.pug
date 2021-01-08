@@ -1,15 +1,24 @@
 extends ../includes/layout.pug
 
+block styles
+    link(rel="stylesheet", href="/css/cart.css")
+
 
 block mainContent
     main
         if products.length > 0
-            ul
+            ul.cart__item-list
                 each product in products
-                    li
-                        p #{product.title} (#{product.cartItem.quantity})
+                    li.cart__item
+                        h1 #{product.title} 
+                        h2 Quantity: #{product.cartItem.quantity}
                         form(action="/cart-delete-item", method="POST")
                             input(type="hidden", name="productID", value=product.id)
-                            button.btn Delete
+                            button.btn.danger Delete
+            div.centered
+                hr
+                form(action="/create-order", method="POST")
+                    button.btn Order Now
+        
         else
             h1 No Products in Cart !
