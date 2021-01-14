@@ -1,14 +1,34 @@
 const env = require("dotenv").config();
-const Sequelize = require("sequelize");
+const mongodb = require("mongodb");
+const MongoClient = mongodb.MongoClient;
 
-const host = process.env.DB_HOST;
-const user = process.env.DB_USER;
-const database = process.env.DB_NAME;
-const password = process.env.DB_PASSWORD;
+const mongoUser = process.env.DB_MONGO_USER;
+const mongoPassword = process.env.DB_MONGO_PASSWORD;
+const mongoDatabase = process.env.DB_MONGO_DATABASE;
 
-const sequelize = new Sequelize(database, user, password, {
-  dialect: "mysql",
-  host: host,
-});
+let _db;
 
-module.exports = sequelize;
+const mongoConnect = (callback) => {
+  MongoClient.connect(
+    `mongodb+srv://${mongoUser}:${mongoPassword}@cluster0.9uqk2.mongodb.net/${mongoDatabase}?retryWrites=true&w=majority`
+  )
+    .then((client) => {
+      console.log("[!] ---- connected mongoDB ---- [!]");
+      _db = client.db();
+      callback();
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+};
+
+const getDB = () => {
+  if (_db) {
+    return _db;
+  }
+  throw "no database fount!!!";
+};
+
+exports.mongoConnect = mongoConnect;
+exports.getDB = getDB;

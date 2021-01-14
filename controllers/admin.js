@@ -1,11 +1,7 @@
 const Product = require("../models/product");
 
 exports.getProducts = (req, res) => {
-  // request object user
-  const userID = req.user.id;
-  // findAll -> sequelize basic method -- Select * FROM --
-  // search all user products
-  Product.findAll({ where: { userId: userID } })
+  Product.fetchAll()
     .then((products) => {
       res.render("admin/admin-product-list.pug", {
         prods: products,
@@ -29,51 +25,55 @@ exports.postAddProduct = (req, res) => {
   const { title, description, price, imageURL } = req.body;
 
   // create model element
-  const product = new Product(null, title, description, price, imageURL); //null --> id element
+  const product = new Product(title, description, price, imageURL);
 
-  // create -> sequelize basic method -- INSERT INTO () VALUES () --
-  Product.create({
-    id: null,
-    title: title,
-    description: description,
-    price: price,
-    imageURL: imageURL,
-    userId: req.user.id, // add request object user
-  })
-    .then(() => {
-      console.log("product is created");
-      res.redirect("/products");
-    })
-    .catch((error) => console.log(error));
+  product.save().then((result) => {
+    console.log("product created");
+  });
+
+  //   // create -> sequelize basic method -- INSERT INTO () VALUES () --
+  //   Product.create({
+  //     id: null,
+  //     title: title,
+  //     description: description,
+  //     price: price,
+  //     imageURL: imageURL,
+  //     userId: req.user.id, // add request object user
+  //   })
+  //     .then(() => {
+  //       console.log("product is created");
+  //       res.redirect("/products");
+  //     })
+  //     .catch((error) => console.log(error));
 };
 
-exports.getEditProduct = (req, res) => {
-  //  req.query ==>  ?edit=true   true or false
-  const editParam = req.query.edit;
+// exports.getEditProduct = (req, res) => {
+//   //  req.query ==>  ?edit=true   true or false
+//   const editParam = req.query.edit;
 
-  if (!editParam) {
-    res.redirect("/");
-  } else {
-    // req.params.productID ==> GET url params /edit-product/:productID
-    const productID = req.params.productID;
+//   if (!editParam) {
+//     res.redirect("/");
+//   } else {
+//     // req.params.productID ==> GET url params /edit-product/:productID
+//     const productID = req.params.productID;
 
-    // findByPk -> sequelize basic method -- Select * FROM table_name WHERE id = productID --
-    Product.findByPk(productID)
-      .then((product) => {
-        if (!product) {
-          res.redirect("/");
-        } else {
-          res.render("admin/edit-product.pug", {
-            docTitle: `Edit ${product.title}`,
-            activePath: "/admin/edit-product",
-            editing: Boolean(editParam), // string true to boolean true, js:)
-            product: product,
-          });
-        }
-      })
-      .catch((error) => console.log(error));
-  }
-};
+//     // findByPk -> sequelize basic method -- Select * FROM table_name WHERE id = productID --
+//     Product.findByPk(productID)
+//       .then((product) => {
+//         if (!product) {
+//           res.redirect("/");
+//         } else {
+//           res.render("admin/edit-product.pug", {
+//             docTitle: `Edit ${product.title}`,
+//             activePath: "/admin/edit-product",
+//             editing: Boolean(editParam), // string true to boolean true, js:)
+//             product: product,
+//           });
+//         }
+//       })
+//       .catch((error) => console.log(error));
+//   }
+// };
 
 exports.postEditProduct = (req, res) => {
   // productID -- edit-product.pug updateProduct button

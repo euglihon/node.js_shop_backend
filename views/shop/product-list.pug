@@ -22,7 +22,7 @@ block mainContent
                             p.product__description #{product.description}
                         div.card__actions
                             //---------------------------
-                            a(href=`/products/${product.id}`).btn Details
+                            a(href=`/products/${product._id}`).btn Details
                             //---------------------------
                             form(action="/add-to-card", method="POST")
                                 input(type="hidden", name="productID", value=product.id)

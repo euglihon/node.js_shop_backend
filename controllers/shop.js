@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+// const Cart = require("../models/cart");
 
 exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
@@ -9,7 +9,7 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  Product.findAll()
+  Product.fetchAll()
     .then((products) => {
       res.render("shop/product-list.pug", {
         prods: products,
@@ -24,11 +24,11 @@ exports.getProductDetail = (req, res) => {
   //  id - get url params --> /products/:id
   const productID = req.params.id;
 
-  Product.findByPk(productID)
+  Product.fetchDetail(productID)
     .then((product) => {
       res.render("shop/product-detail.pug", {
         product: product,
-        docTitle: product.title,
+        docTitle: "product.title",
         activePath: "/products",
       });
     })

@@ -12,18 +12,18 @@ router.get("/products", shopController.getProducts);
 router.get("/products/:id", shopController.getProductDetail);
 
 // route /cart ==> GET
-router.get("/cart", shopController.getCart);
+// router.get("/cart", shopController.getCart);
 
 // route /add-to-card ==> POST
-router.post("/add-to-card", shopController.postCart);
+// router.post("/add-to-card", shopController.postCart);
 
 // route /cart-delete-item ==> POST
-router.post("/cart-delete-item", shopController.postDeleteCartItem);
+// router.post("/cart-delete-item", shopController.postDeleteCartItem);
 
 // route /orders ==> GET
-router.get("/orders", shopController.getOrders);
+// router.get("/orders", shopController.getOrders);
 
 // route /create-order ==> post
-router.post("/create-order", shopController.postOrders);
+// router.post("/create-order", shopController.postOrders);
 
 module.exports = router;

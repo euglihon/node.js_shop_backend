@@ -2,15 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const errorController = require("./controllers/error");
-
-// db, models
-const sequelize = require("./util/database");
-const Product = require("./models/product");
-const User = require("./models/user");
-const Cart = require("./models/cart");
-const CartItem = require("./models/cart-item");
-const Order = require("./models/order");
-const OrderItem = require("./models/order-item");
+const mongoConnect = require("./util/database").mongoConnect;
 
 const app = express();
 
@@ -30,13 +22,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // add user to request object
 app.use((req, res, next) => {
-  User.findByPk(1).then((user) => {
-    // add user to request
-    req.user = user;
-    // next middleware
-    next();
-  });
+  //   User.findByPk(1).then((user) => {
+  //     // add user to request
+  //     req.user = user;
+  //     // next middleware
+  next();
 });
+// });
 
 // add admin route
 app.use("/admin", adminRoutes);
@@ -47,41 +39,8 @@ app.use(shopRoutes);
 // add 404 route
 app.use("/", errorController.get404);
 
-// add models relation
-User.hasMany(Product);
-Product.belongsTo(User, { constrains: true, onDelete: "CASCADE" });
-
-User.hasOne(Cart);
-Cart.belongsTo(User);
-
-Cart.belongsToMany(Product, { through: CartItem });
-Product.belongsToMany(Cart, { through: CartItem });
-
-User.hasMany(Order);
-Order.belongsTo(User);
-
-Order.belongsToMany(Product, { through: OrderItem });
-Product.belongsToMany(Order, { through: OrderItem });
-
-sequelize
-  // .sync({ force: true })
-  .sync()
-  .then((result) => {
-    return User.findByPk(1);
-  })
-  .then((user) => {
-    if (!user) {
-      return User.create({ name: "user1", email: "user1@test.pl" });
-    } else {
-      return user;
-    }
-  })
-  .then((user) => {
-    // create user cart
-    return Cart.create({ userId: user.id });
-  })
-  .then((cart) => {
-    // start app
-    app.listen(3000);
-  })
-  .catch((error) => console.log(error));
+// connect mongoDB server
+mongoConnect(() => {
+  // run app
+  app.listen(3000);
+});
