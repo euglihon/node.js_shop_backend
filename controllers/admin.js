@@ -24,8 +24,14 @@ exports.postAddProduct = (req, res) => {
   // req.body ==> html input form data (edit-product.pug) create product
   const { title, description, price, imageURL } = req.body;
 
-  // create model element
-  const product = new Product(title, description, price, imageURL);
+  const product = new Product(
+    title,
+    description,
+    price,
+    imageURL,
+    null, // null -- id
+    req.user._id // userID
+  );
   product
     .save()
     .then((result) => {
