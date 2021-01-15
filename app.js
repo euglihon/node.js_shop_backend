@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const errorController = require("./controllers/error");
 const mongoConnect = require("./util/database").mongoConnect;
-
+const User = require("./models/user");
 const app = express();
 
 // global configuration parameters
@@ -22,13 +22,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // add user to request object
 app.use((req, res, next) => {
-  //   User.findByPk(1).then((user) => {
-  //     // add user to request
-  //     req.user = user;
-  //     // next middleware
-  next();
+  User.findByPk("6001edb97d49a2792f8764c7").then((user) => {
+    // add user to request
+    req.user = user;
+    // next middleware
+    next();
+  });
 });
-// });
 
 // add admin route
 app.use("/admin", adminRoutes);
