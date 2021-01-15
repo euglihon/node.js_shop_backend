@@ -27,6 +27,6 @@ block mainContent
     
 
         if (editing == true) 
-            input(type="hidden", value=product.id, name='productID')
+            input(type="hidden", value=product._id, name='productID')
 
         button.btn(type="submit")  #{editing === true ? 'Update Product' : 'Add Product'}

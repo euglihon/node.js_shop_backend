@@ -11,5 +11,5 @@ block mainContent
         p  #{product.description}
         //---------------------------------
         form(action="/add-to-card", method="POST")
-            input(type="hidden", name="productID", value=product.id)
+            input(type="hidden", name="productID", value=product._id)
             button.btn Add to Cart     

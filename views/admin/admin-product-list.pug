@@ -24,7 +24,7 @@ block mainContent
                             a(href=`/admin/edit-product/${product._id}?edit=true`).btn Edit
                             //---------------------------
                             form(action="/admin/delete-product", method="POST")
-                                input(type="hidden", value=product.id, name='productID')
+                                input(type="hidden", value=product._id, name='productID')
                                 button.btn Delete
                             
         else                

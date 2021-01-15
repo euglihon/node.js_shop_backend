@@ -2,40 +2,47 @@ const mongodb = require("mongodb");
 const getDB = require("../util/database").getDB;
 
 class Product {
-  constructor(title, price, description, imageURL) {
+  constructor(title, price, description, imageURL, id) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageURL = imageURL;
+    this._id = id ? mongodb.ObjectID(id) : null;
   }
 
   save() {
     const db = getDB();
-    return db.collection("products").insertOne(this);
+    let dbOperation;
+
+    if (this._id) {
+      // Update product
+      dbOperation = db
+        .collection("products")
+        .updateOne({ _id: this._id }, { $set: this });
+    } else {
+      // save new product
+      dbOperation = db.collection("products").insertOne(this);
+    }
+    return dbOperation;
   }
 
   static fetchAll() {
     const db = getDB();
-    return db
-      .collection("products")
-      .find()
-      .toArray()
-      .then((products) => {
-        return products;
-      })
-      .catch((error) => console.log(error));
+    return db.collection("products").find().toArray();
   }
 
   static fetchDetail(productID) {
     const db = getDB();
     return db
       .collection("products")
-      .find({ _id: new mongodb.ObjectID(productID) })
-      .next()
-      .then((product) => {
-        return product;
-      })
-      .catch((error) => console.log(error));
+      .findOne({ _id: new mongodb.ObjectID(productID) });
+  }
+
+  static deleteDetail(productID) {
+    const db = getDB();
+    return db
+      .collection("products")
+      .deleteOne({ _id: new mongodb.ObjectID(productID) });
   }
 }
 
