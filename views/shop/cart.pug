@@ -11,7 +11,7 @@ block mainContent
                 each product in products
                     li.cart__item
                         h1 #{product.title} 
-                        h2 Quantity: #{product.cartItem.quantity}
+                        h2 Quantity: #{product.quantity}
                         form(action="/cart-delete-item", method="POST")
                             input(type="hidden", name="productID", value=product._id)
                             button.btn.danger Delete

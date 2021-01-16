@@ -1,15 +1,19 @@
 extends ../includes/layout.pug
 
 
+block styles
+    link(rel="stylesheet", href="/css/orders.css")
+
+
 block mainContent
     main
         if orders.length <=0
             h1 Nothing there!
         else
-            ul
+            ul.orders
                 each order in orders
-                    li
-                        h1 #{order.id}
-                        ul
-                            each product in order.products
-                                li #{product.title} (#{product.orderItem.quantity})
+                    li.orders__item
+                        h1 Order - #{order._id}
+                        ul.orders__products
+                            each product in order.items
+                                li.orders__products-item #{product.title} (#{product.quantity})
