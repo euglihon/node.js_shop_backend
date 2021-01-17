@@ -1,9 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const env = require("dotenv").config();
+const mongoose = require("mongoose");
 const path = require("path");
 const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database").mongoConnect;
 const User = require("./models/user");
+
 const app = express();
 
 // global configuration parameters
@@ -22,9 +24,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // add user to request object
 app.use((req, res, next) => {
-  User.findById("6001edb97d49a2792f8764c7").then((user) => {
+  User.findById("60048824c6ff2d4701ae7453").then((user) => {
     // add user to request
-    req.user = new User(user.name, user.email, user.cart, user._id);
+    req.user = user;
     // next middleware
     next();
   });
@@ -40,7 +42,26 @@ app.use(shopRoutes);
 app.use("/", errorController.get404);
 
 // connect mongoDB server
-mongoConnect(() => {
-  // run app
-  app.listen(3000);
-});
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_MONGO_USER}:${process.env.DB_MONGO_PASSWORD}@cluster0.9uqk2.mongodb.net/${process.env.DB_MONGO_DATABASE}?retryWrites=true&w=majority`
+  )
+  .then((result) => {
+    User.findOne() // mongoose method
+      .then((user) => {
+        if (!user) {
+          // create test user
+          const user = new User({
+            name: "user1",
+            email: "testUser@shop.com",
+            cart: {
+              items: [],
+            },
+          });
+          user.save(); // mongoose method
+        }
+        // start app
+        app.listen(3000);
+      });
+  })
+  .catch((error) => console.log(error));

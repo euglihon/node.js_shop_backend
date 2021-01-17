@@ -1,7 +1,7 @@
 const Product = require("../models/product");
 
 exports.getProducts = (req, res) => {
-  Product.fetchAll()
+  Product.find() // mongoose method
     .then((products) => {
       res.render("admin/admin-product-list.pug", {
         prods: products,
@@ -24,16 +24,15 @@ exports.postAddProduct = (req, res) => {
   // req.body ==> html input form data (edit-product.pug) create product
   const { title, description, price, imageURL } = req.body;
 
-  const product = new Product(
-    title,
-    description,
-    price,
-    imageURL,
-    null, // null -- id
-    req.user._id // userID
-  );
+  const product = new Product({
+    title: title,
+    description: description,
+    price: price,
+    imageURL: imageURL,
+    userID: req.user._id,
+  });
   product
-    .save()
+    .save() // mongoose method
     .then((result) => {
       console.log("product created");
       res.redirect("/products");
@@ -51,7 +50,7 @@ exports.getEditProduct = (req, res) => {
     // req.params.productID ==> GET url params /edit-product/:productID
     const productID = req.params.productID;
 
-    Product.fetchDetail(productID)
+    Product.findById(productID) // mongoose method
       .then((product) => {
         if (!product) {
           res.redirect("/");
@@ -76,16 +75,15 @@ exports.postEditProduct = (req, res) => {
   const { title, description, price, imageURL } = req.body;
 
   // update product
-  Product.fetchDetail(productID)
+  Product.findById(productID) // mongoose method
     .then((product) => {
-      const updateProduct = new Product(
-        title,
-        description,
-        price,
-        imageURL,
-        productID
-      );
-      updateProduct.save();
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageURL = imageURL;
+      product.userID = req.user;
+
+      return product.save(); // mongoose method
     })
     .then((result) => {
       console.log("updated product");
@@ -98,8 +96,12 @@ exports.postDeleteProduct = (req, res) => {
   // productID -- delete product ID post request from admin product list
   const productID = req.body.productID;
 
-  Product.deleteDetail(productID)
+  Product.findById(productID) // mongoose method
+    .then((product) => {
+      return product.remove(); // mongoose method
+    })
     .then((result) => {
+      console.log("product deleted !");
       res.redirect("/admin/products");
     })
     .catch(() => console.log(error));

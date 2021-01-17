@@ -1,5 +1,4 @@
 const Product = require("../models/product");
-// const Cart = require("../models/cart");
 
 exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
@@ -9,7 +8,7 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  Product.fetchAll()
+  Product.find() // mongoose method
     .then((products) => {
       res.render("shop/product-list.pug", {
         prods: products,
@@ -24,7 +23,7 @@ exports.getProductDetail = (req, res) => {
   //  id - get url params --> /products/:id
   const productID = req.params.id;
 
-  Product.fetchDetail(productID)
+  Product.findById(productID) // mongoose method
     .then((product) => {
       res.render("shop/product-detail.pug", {
         product: product,
@@ -37,8 +36,13 @@ exports.getProductDetail = (req, res) => {
 
 exports.getCart = (req, res) => {
   req.user
-    .getCart()
-    .then((products) => {
+    .populate("cart.items.productID") // population relation, get products User --> Product
+    .execPopulate() // exit population operation
+    .then((user) => {
+      // console.log(user.cart.items);
+
+      const products = user.cart.items;
+
       res.render("shop/cart.pug", {
         docTitle: "Your Cart",
         activePath: "/cart",
@@ -52,39 +56,39 @@ exports.postCart = (req, res) => {
   //  productID - post params --> /cart
   const productID = req.body.productID;
 
-  Product.fetchDetail(productID)
+  Product.findById(productID) //mongoose method
     .then((product) => {
-      // req.user -- new User object, created app.js
-      req.user.addToCart(product);
+      // req.user -- User model object
+      return req.user.addToCart(product); // User model method
     })
     .then((result) => res.redirect("/cart"))
     .catch((error) => console.log(error));
 };
 
-exports.postDeleteCartItem = (req, res) => {
-  const productID = req.body.productID;
-  req.user
-    .deleteCartItem(productID)
-    .then((result) => res.redirect("/cart"))
-    .catch((error) => console.log(error));
-};
+// exports.postDeleteCartItem = (req, res) => {
+//   const productID = req.body.productID;
+//   req.user
+//     .deleteCartItem(productID)
+//     .then((result) => res.redirect("/cart"))
+//     .catch((error) => console.log(error));
+// };
 
-exports.getOrders = (req, res) => {
-  req.user
-    .getOrders()
-    .then((orders) => {
-      res.render("shop/orders.pug", {
-        docTitle: "Your orders",
-        activePath: "/orders",
-        orders: orders,
-      });
-    })
-    .catch((err) => console.log(err));
-};
+// exports.getOrders = (req, res) => {
+//   req.user
+//     .getOrders()
+//     .then((orders) => {
+//       res.render("shop/orders.pug", {
+//         docTitle: "Your orders",
+//         activePath: "/orders",
+//         orders: orders,
+//       });
+//     })
+//     .catch((err) => console.log(err));
+// };
 
-exports.postOrders = (req, res) => {
-  req.user
-    .addOrder()
-    .then((result) => res.redirect("/orders"))
-    .catch((error) => console.log(error));
-};
+// exports.postOrders = (req, res) => {
+//   req.user
+//     .addOrder()
+//     .then((result) => res.redirect("/orders"))
+//     .catch((error) => console.log(error));
+// };
