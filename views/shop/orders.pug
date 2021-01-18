@@ -17,3 +17,5 @@ block mainContent
                         ul.orders__products
                             each product in order.products
                                 li.orders__products-item #{product.product.title} (#{product.quantity})
+                                    p price #{Number(product.product.price) * product.quantity} $       
+                                        
