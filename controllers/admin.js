@@ -7,6 +7,7 @@ exports.getProducts = (req, res) => {
         prods: products,
         docTitle: "Admin products list",
         activePath: "/admin/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch(() => console.log(error));
@@ -17,6 +18,7 @@ exports.getAddProduct = (req, res) => {
     docTitle: "Add Product",
     activePath: "/admin/add-product",
     editing: false,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -29,7 +31,7 @@ exports.postAddProduct = (req, res) => {
     description: description,
     price: price,
     imageURL: imageURL,
-    userID: req.user._id,
+    userID: req.session.user._id,
   });
   product
     .save() // mongoose method
@@ -60,6 +62,7 @@ exports.getEditProduct = (req, res) => {
             activePath: "/admin/edit-product",
             editing: Boolean(editParam), // string true to boolean true, js:)
             product: product,
+            isAuthenticated: req.session.isLoggedIn,
           });
         }
       })
@@ -81,7 +84,7 @@ exports.postEditProduct = (req, res) => {
       product.price = price;
       product.description = description;
       product.imageURL = imageURL;
-      product.userID = req.user;
+      product.userID = req.session.user;
 
       return product.save(); // mongoose method
     })

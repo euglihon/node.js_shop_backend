@@ -5,6 +5,7 @@ exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
     docTitle: "Index Page",
     activePath: "/",
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -15,6 +16,7 @@ exports.getProducts = (req, res) => {
         prods: products,
         docTitle: "Products list",
         activePath: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -30,14 +32,16 @@ exports.getProductDetail = (req, res) => {
         product: product,
         docTitle: "product.title",
         activePath: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
 };
 
 exports.getCart = (req, res) => {
-  req.user
+  req.session.user
     .populate("cart.items.productID") // population relation, get products User --> Product
+
     .execPopulate() // exit population operation
     .then((user) => {
       const products = user.cart.items;
@@ -46,6 +50,7 @@ exports.getCart = (req, res) => {
         docTitle: "Your Cart",
         activePath: "/cart",
         products: products,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -57,8 +62,8 @@ exports.postCart = (req, res) => {
 
   Product.findById(productID) //mongoose method
     .then((product) => {
-      // req.user -- User model object
-      return req.user.addToCart(product); // User model method
+      // req.session.user -- User model object
+      return req.session.user.addToCart(product); // User model method
     })
     .then((result) => res.redirect("/cart"))
     .catch((error) => console.log(error));
@@ -66,14 +71,14 @@ exports.postCart = (req, res) => {
 
 exports.postDeleteCartItem = (req, res) => {
   const productID = req.body.productID;
-  req.user
+  req.session.user
     .removeCartItem(productID) // User model method
     .then((result) => res.redirect("/cart"))
     .catch((error) => console.log(error));
 };
 
 exports.postOrders = (req, res) => {
-  req.user
+  req.session.user
     .populate("cart.items.productID")
     .execPopulate()
     .then((user) => {
@@ -88,24 +93,25 @@ exports.postOrders = (req, res) => {
       const order = new Order({
         products: updateProducts,
         user: {
-          email: req.user.email,
-          userID: req.user._id,
+          email: req.session.user.email,
+          userID: req.session.user._id,
         },
       });
       return order.save();
     })
-    .then((result) => req.user.clearCart())
+    .then((result) => req.session.user.clearCart())
     .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res) => {
-  Order.find({ "user.userID": req.user._id })
+  Order.find({ "user.userID": req.session.user._id })
     .then((orders) => {
       res.render("shop/orders.pug", {
         docTitle: "Your orders",
         activePath: "/orders",
         orders: orders,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
