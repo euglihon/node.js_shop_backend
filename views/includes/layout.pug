@@ -24,46 +24,63 @@ html(lang="en")
                     li.main-header__item
                         a(href="/products", class=(activePath === '/products' ? 'active' : '')) Products        
 
-                    li.main-header__item
-                        a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
 
-                    li.main-header__item
-                        a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
+                    if isAuthenticated
 
-                    //- admin aria
+                        li.main-header__item
+                            a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
 
-                    li.main-header__item
-                        a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
+                        li.main-header__item
+                            a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
+
+                        //- admin aria
+                  
+                        li.main-header__item
+                            a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
                     
-                    li.main-header__item
-                        a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
+                        li.main-header__item
+                            a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
 
+            
+
+                ul.main-header__item-list
+                
+                    if !isAuthenticated
+                        
+                        li.main-header__item
+                            a(href="/login", class=(activePath === '/login' ? 'active' : '')) Login      
+                
+                    if isAuthenticated
+
+                        li.main-header__item
+                            form(action="/logout", method="POST")
+                                button Logout
 
         //- temporary mobile navigation
-        nav.mobile-nav
-            ul.mobile-nav__item-list
+        //- nav.mobile-nav
+        //-     ul.mobile-nav__item-list
                 
-                    //- shop aria
+        //-             //- shop aria
 
-                    li.mobile-nav__item
-                        a(href="/", class=(activePath === '/' ? 'active' : '')) Shop  
+        //-             li.mobile-nav__item
+        //-                 a(href="/", class=(activePath === '/' ? 'active' : '')) Shop  
 
-                    li.mobile-nav__item
-                        a(href="/products", class=(activePath === '/products' ? 'active' : '')) Products        
+        //-             li.mobile-nav__item
+        //-                 a(href="/products", class=(activePath === '/products' ? 'active' : '')) Products        
 
-                    li.mobile-nav__item
-                        a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
+        //-             li.mobile-nav__item
+        //-                 a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
 
-                    li.mobile-nav__item
-                        a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
+        //-             li.mobile-nav__item
+        //-                 a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
 
-                    //- admin aria
+        //-             //- admin aria
 
-                    li.mobile-nav__item
-                        a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
+        //-             li.mobile-nav__item
+        //-                 a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
                     
-                    li.mobile-nav__item
-                        a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
+        //-             li.mobile-nav__item
+        //-                 a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
 
 
     //- pug content block

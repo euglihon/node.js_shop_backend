@@ -46,6 +46,21 @@ app.use(
   })
 );
 
+// add user to request
+app.use((req, res, next) => {
+  // session user created in auth
+  if (req.session.user) {
+    User.findById(req.session.user._id)
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((error) => console.log(error));
+  } else {
+    return next();
+  }
+});
+
 // add admin route
 app.use("/admin", adminRoutes);
 

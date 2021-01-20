@@ -31,7 +31,7 @@ exports.postAddProduct = (req, res) => {
     description: description,
     price: price,
     imageURL: imageURL,
-    userID: req.session.user._id,
+    userID: req.user._id,
   });
   product
     .save() // mongoose method
@@ -84,7 +84,7 @@ exports.postEditProduct = (req, res) => {
       product.price = price;
       product.description = description;
       product.imageURL = imageURL;
-      product.userID = req.session.user;
+      product.userID = req.user;
 
       return product.save(); // mongoose method
     })

@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const User = require("../models/user");
 const Order = require("../models/order");
 
 exports.getIndex = (req, res) => {
@@ -39,7 +40,7 @@ exports.getProductDetail = (req, res) => {
 };
 
 exports.getCart = (req, res) => {
-  req.session.user
+  req.user
     .populate("cart.items.productID") // population relation, get products User --> Product
 
     .execPopulate() // exit population operation
@@ -62,8 +63,8 @@ exports.postCart = (req, res) => {
 
   Product.findById(productID) //mongoose method
     .then((product) => {
-      // req.session.user -- User model object
-      return req.session.user.addToCart(product); // User model method
+      // req.user -- User model object
+      return req.user.addToCart(product); // User model method
     })
     .then((result) => res.redirect("/cart"))
     .catch((error) => console.log(error));
@@ -71,14 +72,14 @@ exports.postCart = (req, res) => {
 
 exports.postDeleteCartItem = (req, res) => {
   const productID = req.body.productID;
-  req.session.user
+  req.user
     .removeCartItem(productID) // User model method
     .then((result) => res.redirect("/cart"))
     .catch((error) => console.log(error));
 };
 
 exports.postOrders = (req, res) => {
-  req.session.user
+  req.user
     .populate("cart.items.productID")
     .execPopulate()
     .then((user) => {
@@ -93,19 +94,19 @@ exports.postOrders = (req, res) => {
       const order = new Order({
         products: updateProducts,
         user: {
-          email: req.session.user.email,
-          userID: req.session.user._id,
+          email: req.user.email,
+          userID: req.user._id,
         },
       });
       return order.save();
     })
-    .then((result) => req.session.user.clearCart())
+    .then((result) => req.user.clearCart())
     .then((result) => res.redirect("/orders"))
     .catch((err) => console.log(err));
 };
 
 exports.getOrders = (req, res) => {
-  Order.find({ "user.userID": req.session.user._id })
+  Order.find({ "user.userID": req.user._id })
     .then((orders) => {
       res.render("shop/orders.pug", {
         docTitle: "Your orders",
