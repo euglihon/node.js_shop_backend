@@ -7,16 +7,17 @@ block styles
 
 
 block mainContent
-    form.login-form(action="/login", method="POST")
+
+    form.login-form(action="/signup", method="POST")
         input(type="hidden", name='_csrf', value=csrfToken)
-        
         div.form-control
-            label(for="email") E-mail
+            label(for="email") E-Mail
             input(type="email", name="email", id="email")
-                
         div.form-control
             label(for="password") Password
             input(type="password", name="password", id="password")
-        
+        div.form-control
+            label(for="confirmPassword") Confirm Password
+            input(type="password", name="confirmPassword", id="confirmPassword")
+        button.btn Sign up
 
-        button.btn(type="submit") Login

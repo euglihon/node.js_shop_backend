@@ -49,39 +49,61 @@ html(lang="en")
                         
                         li.main-header__item
                             a(href="/login", class=(activePath === '/login' ? 'active' : '')) Login      
-                
+                        
+                        li.main-header__item
+                            a(href="/signup", class=(activePath === '/signup' ? 'active' : '')) Signup 
+
                     if isAuthenticated
 
                         li.main-header__item
                             form(action="/logout", method="POST")
+                                input(type="hidden", name='_csrf', value=csrfToken)
                                 button Logout
 
+
         //- temporary mobile navigation
-        //- nav.mobile-nav
-        //-     ul.mobile-nav__item-list
+        nav.mobile-nav
+            ul.mobile-nav__item-list
                 
-        //-             //- shop aria
+                    //- shop aria
 
-        //-             li.mobile-nav__item
-        //-                 a(href="/", class=(activePath === '/' ? 'active' : '')) Shop  
+                    li.mobile-nav__item
+                        a(href="/", class=(activePath === '/' ? 'active' : '')) Shop  
 
-        //-             li.mobile-nav__item
-        //-                 a(href="/products", class=(activePath === '/products' ? 'active' : '')) Products        
+                    li.mobile-nav__item
+                        a(href="/products", class=(activePath === '/products' ? 'active' : '')) Products        
 
-        //-             li.mobile-nav__item
-        //-                 a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
+                    if isAuthenticated
 
-        //-             li.mobile-nav__item
-        //-                 a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
+                        li.mobile-nav__item
+                            a(href="/cart", class=(activePath === '/cart' ? 'active' : '')) Cart      
 
-        //-             //- admin aria
+                        li.mobile-nav__item
+                            a(href="/orders", class=(activePath === '/orders' ? 'active' : '')) Orders      
 
-        //-             li.mobile-nav__item
-        //-                 a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
+                        //- admin aria
+
+                        li.mobile-nav__item
+                            a(href="/admin/add-product", class=(activePath === '/admin/add-product' ? 'active' : '')) Add product
                     
-        //-             li.mobile-nav__item
-        //-                 a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
+                        li.mobile-nav__item
+                            a(href="/admin/products", class=(activePath === '/admin/products' ? 'active' : '')) Admin products
 
+                
+                    if !isAuthenticated
+                        
+                        li.mobile-nav__item
+                            a(href="/login", class=(activePath === '/login' ? 'active' : '')) Login      
+                        
+                        li.mobile-nav__item
+                            a(href="/signup", class=(activePath === '/signup' ? 'active' : '')) Signup 
+
+                    if isAuthenticated
+
+                        li.mobile-nav__item
+                            form(action="/logout", method="POST")
+                                input(type="hidden", name='_csrf', value=csrfToken)
+                                button Logout
 
     //- pug content block
     block mainContent
