@@ -6,7 +6,6 @@ exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
     docTitle: "Index Page",
     activePath: "/",
-    isAuthenticated: req.session.isLoggedIn,
   });
 };
 

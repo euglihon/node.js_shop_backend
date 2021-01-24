@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const session = require("express-session");
 const mongoDBSessionStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -20,6 +21,9 @@ const sessionStore = new mongoDBSessionStore({
   uri: mongoDbURI,
   collection: "sessions",
 });
+
+// add CSRF protection configuration middleware
+const csrfProtection = csrf();
 
 // global configuration parameters
 app.set("view engine", "pug"); // add template engine
@@ -46,6 +50,9 @@ app.use(
   })
 );
 
+// protection middleware
+app.use(csrfProtection);
+
 // add user to request
 app.use((req, res, next) => {
   // session user created in auth
@@ -59,6 +66,13 @@ app.use((req, res, next) => {
   } else {
     return next();
   }
+});
+
+// add locals templates variables
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 // add admin route
@@ -76,22 +90,5 @@ app.use("/", errorController.get404);
 // connect mongoDB server
 mongoose
   .connect(mongoDbURI)
-  .then((result) => {
-    User.findOne() // mongoose method
-      .then((user) => {
-        if (!user) {
-          // create test user
-          const user = new User({
-            name: "user1",
-            email: "testUser@shop.com",
-            cart: {
-              items: [],
-            },
-          });
-          user.save(); // mongoose method
-        }
-        // start app
-        app.listen(3000);
-      });
-  })
+  .then((result) => app.listen(3000)) // start app
   .catch((error) => console.log(error));
