@@ -1,12 +1,13 @@
 const Product = require("../models/product");
 
 exports.getProducts = (req, res) => {
-  Product.find() // mongoose method
+  Product.find({ userID: req.user._id }) // mongoose method
     .then((products) => {
       res.render("admin/admin-product-list.pug", {
         prods: products,
         docTitle: "Admin products list",
         activePath: "/admin/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch(() => console.log(error));
@@ -17,6 +18,7 @@ exports.getAddProduct = (req, res) => {
     docTitle: "Add Product",
     activePath: "/admin/add-product",
     editing: false,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -60,6 +62,7 @@ exports.getEditProduct = (req, res) => {
             activePath: "/admin/edit-product",
             editing: Boolean(editParam), // string true to boolean true, js:)
             product: product,
+            isAuthenticated: req.session.isLoggedIn,
           });
         }
       })
@@ -77,18 +80,22 @@ exports.postEditProduct = (req, res) => {
   // update product
   Product.findById(productID) // mongoose method
     .then((product) => {
+      if (product.userID.toString() !== req.user._id.toString()) {
+        return res.redirect("/");
+      }
+
       product.title = title;
       product.price = price;
       product.description = description;
       product.imageURL = imageURL;
       product.userID = req.user;
 
-      return product.save(); // mongoose method
+      return product.save().then((result) => {
+        console.log("updated product");
+        res.redirect("/admin/products");
+      });
     })
-    .then((result) => {
-      console.log("updated product");
-      res.redirect("/admin/products");
-    })
+
     .catch((error) => console.log(error));
 };
 
@@ -96,10 +103,7 @@ exports.postDeleteProduct = (req, res) => {
   // productID -- delete product ID post request from admin product list
   const productID = req.body.productID;
 
-  Product.findById(productID) // mongoose method
-    .then((product) => {
-      return product.remove(); // mongoose method
-    })
+  Product.deleteOne({ _id: productID, userID: req.user._id })
     .then((result) => {
       console.log("product deleted !");
       res.redirect("/admin/products");

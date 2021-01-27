@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const User = require("../models/user");
 const Order = require("../models/order");
 
 exports.getIndex = (req, res) => {
@@ -15,6 +16,7 @@ exports.getProducts = (req, res) => {
         prods: products,
         docTitle: "Products list",
         activePath: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -30,6 +32,7 @@ exports.getProductDetail = (req, res) => {
         product: product,
         docTitle: "product.title",
         activePath: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -38,6 +41,7 @@ exports.getProductDetail = (req, res) => {
 exports.getCart = (req, res) => {
   req.user
     .populate("cart.items.productID") // population relation, get products User --> Product
+
     .execPopulate() // exit population operation
     .then((user) => {
       const products = user.cart.items;
@@ -46,6 +50,7 @@ exports.getCart = (req, res) => {
         docTitle: "Your Cart",
         activePath: "/cart",
         products: products,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));
@@ -106,6 +111,7 @@ exports.getOrders = (req, res) => {
         docTitle: "Your orders",
         activePath: "/orders",
         orders: orders,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => console.log(error));

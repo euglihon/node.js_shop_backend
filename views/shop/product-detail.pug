@@ -10,6 +10,10 @@ block mainContent
         h2 #{product.price}
         p  #{product.description}
         //---------------------------------
-        form(action="/add-to-card", method="POST")
-            input(type="hidden", name="productID", value=product._id)
-            button.btn Add to Cart     
+
+        if isAuthenticated
+
+            form(action="/add-to-card", method="POST")
+                input(type="hidden", name='_csrf', value=csrfToken)
+                input(type="hidden", name="productID", value=product._id)
+                button.btn Add to Cart     
