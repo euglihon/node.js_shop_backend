@@ -12,7 +12,7 @@ block mainContent
         div.user-message.user-message--error #{errorMessage}
     
 
-    form.login-form(action="/signup", method="POST")
+    form.login-form(action="/signup", method="POST", novalidate)
         input(type="hidden", name='_csrf', value=csrfToken)
         div.form-control
             label(for="email") E-Mail

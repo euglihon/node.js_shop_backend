@@ -1,4 +1,6 @@
 const express = require("express");
+const { check, body } = require("express-validator/check");
+
 const authController = require("../controllers/auth");
 const router = express.Router();
 
@@ -14,8 +16,30 @@ router.post("/logout", authController.postLogout);
 // route ==> /signup ==> GET
 router.get("/signup", authController.getSignup);
 
-// route ==> /signup ==> POST
-router.post("/signup", authController.postSignup);
+// route ==> /signup ==> POST.
+router.post(
+  "/signup",
+
+  // add check validation middleware
+  [
+    check("email").isEmail().withMessage("Invalid Email"),
+
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long ")
+      .isAlphanumeric()
+      .withMessage("Password can consist of numbers and letters"),
+
+    body("confirmPassword").custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords have to match");
+      }
+      return true;
+    }),
+  ],
+
+  authController.postSignup
+);
 
 // route ==> /reset-password ==> GET
 router.get("/reset-password", authController.getResetPassword);

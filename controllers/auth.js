@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const sendGridTransport = require("nodemailer-sendgrid-transport");
 
+const { validationResult } = require("express-validator/check");
+
 const User = require("../models/user");
 
 // init email server transporter
@@ -86,6 +88,16 @@ exports.getSignup = (req, res) => {
 
 exports.postSignup = (req, res) => {
   const { email, password, confirmPassword } = req.body;
+
+  // add validation
+  const validationError = validationResult(req);
+  if (!validationError.isEmpty()) {
+    return res.status(422).render("auth/signup.pug", {
+      activePath: "/signup",
+      docTitle: "Signup",
+      errorMessage: validationError.array()[0].msg, // flash message validation errors
+    });
+  }
 
   User.findOne({ email: email })
     .then((user) => {
