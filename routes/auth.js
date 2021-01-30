@@ -1,6 +1,8 @@
 const express = require("express");
 const { check, body } = require("express-validator/check");
 
+const User = require("../models/user");
+
 const authController = require("../controllers/auth");
 const router = express.Router();
 
@@ -8,7 +10,20 @@ const router = express.Router();
 router.get("/login", authController.getLogin);
 
 // route ==> /login ==> POST
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  // add check validation middleware
+  [
+    check("email").isEmail().withMessage("Invalid Email address"),
+
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("Password is too short")
+      .isAlphanumeric()
+      .withMessage("Password can consist of numbers and letters"),
+  ],
+  authController.postLogin
+);
 
 // route ==> /logout ==> POST
 router.post("/logout", authController.postLogout);
@@ -19,10 +34,18 @@ router.get("/signup", authController.getSignup);
 // route ==> /signup ==> POST.
 router.post(
   "/signup",
-
   // add check validation middleware
   [
-    check("email").isEmail().withMessage("Invalid Email"),
+    check("email")
+      .isEmail()
+      .withMessage("Invalid Email")
+      .custom((value, { req }) => {
+        return User.findOne({ email: value }).then((user) => {
+          if (user) {
+            return Promise.reject("Email already exists");
+          }
+        });
+      }),
 
     body("password")
       .isLength({ min: 8 })
@@ -37,7 +60,6 @@ router.post(
       return true;
     }),
   ],
-
   authController.postSignup
 );
 

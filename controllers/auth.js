@@ -33,6 +33,14 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = (req, res) => {
   const { email, password } = req.body;
+  // add validation
+  const validationError = validationResult(req);
+  if (!validationError.isEmpty()) {
+    return res.status(422).render("auth/login.pug", {
+      activePath: "/login",
+      errorMessage: validationError.array()[0].msg, // flash message validation errors
+    });
+  }
 
   User.findOne({ email: email })
     .then((user) => {
@@ -99,40 +107,27 @@ exports.postSignup = (req, res) => {
     });
   }
 
-  User.findOne({ email: email })
-    .then((user) => {
-      if (user) {
-        // flash message
-        req.flash("signup-error", "Email already exists");
-        return res.redirect("/signup");
-      }
-      bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          // send email
-          return transporter.sendMail({
-            to: email,
-            from: "shop@nodeShop.com",
-            subject: "Signup succeeded",
-            html: "<h1>You successfully signed up</h1>",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then((result) => {
+      res.redirect("/login");
+      // send email
+      return transporter.sendMail({
+        to: email,
+        from: "shop@nodeShop.com",
+        subject: "Signup succeeded",
+        html: "<h1>You successfully signed up</h1>",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getResetPassword = (req, res) => {
