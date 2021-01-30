@@ -14,12 +14,16 @@ router.post(
   "/login",
   // add check validation middleware
   [
-    check("email").isEmail().withMessage("Invalid Email address"),
+    check("email")
+      .isEmail()
+      .withMessage("Invalid Email address")
+      .normalizeEmail(),
 
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password is too short")
       .isAlphanumeric()
+      .trim()
       .withMessage("Password can consist of numbers and letters"),
   ],
   authController.postLogin
@@ -45,12 +49,14 @@ router.post(
             return Promise.reject("Email already exists");
           }
         });
-      }),
+      })
+      .normalizeEmail(),
 
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters long ")
       .isAlphanumeric()
+      .trim()
       .withMessage("Password can consist of numbers and letters"),
 
     body("confirmPassword").custom((value, { req }) => {
