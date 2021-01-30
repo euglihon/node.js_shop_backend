@@ -16,10 +16,10 @@ block mainContent
         input(type="hidden", name='_csrf', value=csrfToken)
         div.form-control
             label(for="email") E-Mail
-            input(type="email", name="email", id="email")
+            input(type="email", name="email", id="email", value=oldInputData.email)
         div.form-control
             label(for="password") Password
-            input(type="password", name="password", id="password")
+            input(type="password", name="password", id="password", value=oldInputData.password)
         div.form-control
             label(for="confirmPassword") Confirm Password
             input(type="password", name="confirmPassword", id="confirmPassword")
