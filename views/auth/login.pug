@@ -16,11 +16,23 @@ block mainContent
         
         div.form-control
             label(for="email") E-mail
-            input(type="email", name="email", id="email", value=oldInputData.email)
+            input(
+                class=validationErrors.find(e => e.param === 'email') ? 'invalid' : '', 
+                type="email", 
+                name="email", 
+                id="email", 
+                value=oldInputData.email
+                )
                 
         div.form-control
             label(for="password") Password
-            input(type="password", name="password", id="password", value=oldInputData.password)
+            input(
+                class=validationErrors.find(e => e.param === 'password') ? 'invalid' : '', 
+                type="password", 
+                name="password", 
+                id="password", 
+                value=oldInputData.password
+                )
         
         button.btn(type="submit") Login
 

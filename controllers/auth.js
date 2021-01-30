@@ -28,7 +28,9 @@ exports.getLogin = (req, res) => {
   res.render("auth/login.pug", {
     activePath: "/login",
     errorMessage: message,
+
     oldInputData: { email: "", password: "" },
+    validationErrors: [],
   });
 };
 
@@ -40,7 +42,9 @@ exports.postLogin = (req, res) => {
     return res.status(422).render("auth/login.pug", {
       activePath: "/login",
       errorMessage: validationError.array()[0].msg, // flash message validation errors,
+
       oldInputData: { email: email, password: password },
+      validationErrors: validationError.array(),
     });
   }
 
@@ -93,7 +97,9 @@ exports.getSignup = (req, res) => {
     activePath: "/signup",
     docTitle: "Signup",
     errorMessage: message,
+
     oldInputData: { email: "", password: "" },
+    validationErrors: [],
   });
 };
 
@@ -107,7 +113,9 @@ exports.postSignup = (req, res) => {
       activePath: "/signup",
       docTitle: "Signup",
       errorMessage: validationError.array()[0].msg, // flash message validation errors
+
       oldInputData: { email: email, password: password },
+      validationErrors: validationError.array(),
     });
   }
 
