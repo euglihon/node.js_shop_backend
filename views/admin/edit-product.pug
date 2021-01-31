@@ -10,21 +10,48 @@ block mainContent
     form.product-form(action=`/admin/${editing === true ? 'edit-product' : 'add-product'}`, method="POST")
         input(type="hidden", name='_csrf', value=csrfToken)
         
+
+        if errorMessage
+            div.user-message.user-message--error #{errorMessage}
+
         div.form-control
             label(for="title") Title
-            input(type="text", name="title", id="title", value=`${editing === true ? product.title : ''}`)
+            input(
+                class=validationErrors.find(e => e.param === 'title') ? 'invalid' : '',
+                type="text", 
+                name="title", 
+                id="title", 
+                value=`${editing || hasError === true ? product.title : ''}`
+                )
         
         div.form-control
             label(for="description") Description
-            textarea(name="description", rows="5") #{editing === true ? product.description : ''}
+            textarea(
+                class=validationErrors.find(e => e.param === 'description') ? 'invalid' : '',
+                name="description", 
+                rows="5"
+                ) #{editing|| hasError === true ? product.description : ''}
         
         div.form-control
             label(for="price") Price
-            input(type="number", name="price", id="price", step="0.01", value=`${editing === true ? product.price : ''}`)
+            input(
+                class=validationErrors.find(e => e.param === 'price') ? 'invalid' : '',
+                type="number", 
+                name="price", 
+                id="price", 
+                step="0.01", 
+                value=`${editing|| hasError === true ? product.price : ''}`
+                )
         
         div.form-control
             label(for="imageURL") ImageURL
-            input(type="text", name="imageURL", id="imageURL", value=`${editing === true ? product.imageURL : ''}`)
+            input(
+                class=validationErrors.find(e => e.param === 'imageURL') ? 'invalid' : '',
+                type="text", 
+                name="imageURL", 
+                id="imageURL", 
+                value=`${editing|| hasError === true ? product.imageURL : ''}`
+                )
     
 
         if (editing == true) 
