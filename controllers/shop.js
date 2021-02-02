@@ -19,7 +19,11 @@ exports.getProducts = (req, res) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.getProductDetail = (req, res) => {
@@ -35,7 +39,11 @@ exports.getProductDetail = (req, res) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.getCart = (req, res) => {
@@ -53,7 +61,11 @@ exports.getCart = (req, res) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.postCart = (req, res) => {
@@ -66,7 +78,11 @@ exports.postCart = (req, res) => {
       return req.user.addToCart(product); // User model method
     })
     .then((result) => res.redirect("/cart"))
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.postDeleteCartItem = (req, res) => {
@@ -74,7 +90,11 @@ exports.postDeleteCartItem = (req, res) => {
   req.user
     .removeCartItem(productID) // User model method
     .then((result) => res.redirect("/cart"))
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.postOrders = (req, res) => {
@@ -101,7 +121,11 @@ exports.postOrders = (req, res) => {
     })
     .then((result) => req.user.clearCart())
     .then((result) => res.redirect("/orders"))
-    .catch((err) => console.log(err));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };
 
 exports.getOrders = (req, res) => {
@@ -114,5 +138,9 @@ exports.getOrders = (req, res) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      const err = new Error(error);
+      err.httpStatusCode = 500;
+      return next(err);
+    });
 };

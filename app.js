@@ -64,10 +64,15 @@ app.use((req, res, next) => {
   if (req.session.user) {
     User.findById(req.session.user._id)
       .then((user) => {
+        if (!user) {
+          return next();
+        }
         req.user = user;
         next();
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        throw new Error(error);
+      });
   } else {
     return next();
   }
@@ -89,8 +94,16 @@ app.use(shopRoutes);
 // add auth routes
 app.use(authRoutes);
 
+// add 500 route
+app.get("/500", errorController.get500);
+
 // add 404 route
 app.use("/", errorController.get404);
+
+// add error redirect
+app.use((error, req, res) => {
+  res.redirect("/500");
+});
 
 // connect mongoDB server
 mongoose
