@@ -33,7 +33,25 @@ exports.getAddProduct = (req, res) => {
 
 exports.postAddProduct = (req, res) => {
   // req.body ==> html input form data (edit-product.pug) create product
-  const { title, description, price, imageURL } = req.body;
+  const { title, description, price } = req.body;
+  const imageFile = req.file;
+
+  if (!imageFile) {
+    return res.status(422).render("admin/edit-product.pug", {
+      docTitle: "Add Product",
+      activePath: "/admin/add-product",
+      editing: false,
+      isAuthenticated: req.session.isLoggedIn,
+      product: {
+        title: title,
+        description: description,
+        price: price,
+      },
+      hasError: true,
+      errorMessage: "Attached file is not an image",
+      validationErrors: [],
+    });
+  }
 
   // add validation
   const validationError = validationResult(req);
@@ -47,13 +65,15 @@ exports.postAddProduct = (req, res) => {
         title: title,
         description: description,
         price: price,
-        imageURL: imageURL,
       },
       hasError: true,
       errorMessage: validationError.array()[0].msg,
       validationErrors: validationError.array(),
     });
   }
+
+  // add image server path
+  const imageURL = imageFile.path;
 
   const product = new Product({
     title: title,
@@ -115,7 +135,9 @@ exports.postEditProduct = (req, res) => {
   const productID = req.body.productID;
 
   // req.body ==> html input form data (edit-product.pug) update product
-  const { title, description, price, imageURL } = req.body;
+  const { title, description, price } = req.body;
+
+  const imageFile = req.file;
 
   // add validation
   const validationError = validationResult(req);
@@ -129,7 +151,6 @@ exports.postEditProduct = (req, res) => {
         title: title,
         description: description,
         price: price,
-        imageURL: imageURL,
       },
       hasError: true,
       errorMessage: validationError.array()[0].msg,
@@ -147,8 +168,10 @@ exports.postEditProduct = (req, res) => {
       product.title = title;
       product.price = price;
       product.description = description;
-      product.imageURL = imageURL;
       product.userID = req.user;
+      if (imageFile) {
+        product.imageURL = imageFile.path;
+      }
 
       return product.save().then((result) => {
         console.log("updated product");

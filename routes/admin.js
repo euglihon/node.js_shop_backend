@@ -33,8 +33,6 @@ router.post(
       .isFloat()
       .trim()
       .withMessage("please enter the correct price"),
-
-    body("imageURL").isURL().withMessage("please enter the correct url"),
   ],
   // add isAuthn middleware
   isAuth,
@@ -68,8 +66,6 @@ router.post(
       .isFloat()
       .trim()
       .withMessage("please enter the correct price"),
-
-    body("imageURL").isURL().withMessage("please enter the correct url"),
   ],
   isAuth, // add isAuthn middleware
   adminController.postEditProduct

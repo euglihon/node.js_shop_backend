@@ -6,7 +6,7 @@ block mainContent
         h1 #{product.title}
         hr 
         div
-            img(src=product.imageURL, alt=product.title)
+            img(src=`/${product.imageURL}`, alt=product.title)
         h2 #{product.price}
         p  #{product.description}
         //---------------------------------

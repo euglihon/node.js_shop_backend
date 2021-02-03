@@ -2,7 +2,10 @@ const path = require("path");
 const env = require("dotenv").config();
 
 const express = require("express");
+
 const bodyParser = require("body-parser");
+const multer = require("multer");
+
 const mongoose = require("mongoose");
 
 const session = require("express-session");
@@ -24,6 +27,29 @@ const sessionStore = new mongoDBSessionStore({
   collection: "sessions",
 });
 
+// multer file storage configuration
+const fileStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "images"); // file folder
+  },
+  filename: (req, file, callback) => {
+    callback(null, new Date().toISOString() + "--" + file.originalname); // new file name
+  },
+});
+
+// multer file filter configuration
+const fileFilter = (req, file, callback) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    callback(null, true);
+  } else {
+    callback(null, false);
+  }
+};
+
 // add CSRF protection configuration middleware
 const csrfProtection = csrf();
 
@@ -39,8 +65,14 @@ const authRoutes = require("./routes/auth");
 // POST routes parsing
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// POST routes file parser(html file name == image)
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
+
 // load static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // create session
 app.use(
