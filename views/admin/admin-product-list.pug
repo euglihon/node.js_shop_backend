@@ -28,5 +28,20 @@ block mainContent
                                 input(type="hidden", value=product._id, name='productID')
                                 button.btn Delete
                             
+            section.pagination
+                if currentPage != 1 && previousPage != 1
+                    a(href="?page=1") 1
+
+                if hasPreviousPage === true
+                    a(href=`?page=${previousPage}`) #{previousPage}
+
+                a.active(href=`?page=${currentPage}`) #{currentPage}
+                
+                if hasNextPage === true
+                    a(href=`?page=${nextPage}`) #{nextPage}
+
+                if lastPage !== currentPage && nextPage !== lastPage
+                    a(href=`?page=${lastPage}`) #{lastPage}
+
         else                
             h1 No products 

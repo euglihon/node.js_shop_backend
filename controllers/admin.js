@@ -2,14 +2,36 @@ const Product = require("../models/product");
 
 const { validationResult } = require("express-validator/check");
 
+//pagination params
+const ITEMS_PER_PAGE = 1;
+
 exports.getProducts = (req, res) => {
+  //add pagination
+  const page = Number(req.query.page) || 1; // '/?page=__' product-list.pug
+  let totalItems = 0;
+
   Product.find({ userID: req.user._id }) // mongoose method
+    .countDocuments()
+    .then((sumProducts) => {
+      totalItems = sumProducts;
+      return Product.find({ userID: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE) // pagination find param
+        .limit(ITEMS_PER_PAGE); // pagination page
+    })
+
     .then((products) => {
       res.render("admin/admin-product-list.pug", {
         prods: products,
         docTitle: "Admin products list",
         activePath: "/admin/products",
         isAuthenticated: req.session.isLoggedIn,
+        // pagination param
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((error) => {

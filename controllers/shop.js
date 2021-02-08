@@ -7,6 +7,9 @@ const Order = require("../models/order");
 
 const pdfkit = require("pdfkit");
 
+//pagination params
+const ITEMS_PER_PAGE = 1;
+
 exports.getIndex = (req, res) => {
   res.render("shop/index.pug", {
     docTitle: "Index Page",
@@ -15,13 +18,32 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  Product.find() // mongoose method
+  //add pagination
+  const page = Number(req.query.page) || 1; // '/?page=__' product-list.pug
+  let totalItems = 0;
+
+  Product.find()
+    .countDocuments()
+    .then((sumProducts) => {
+      totalItems = sumProducts;
+      return Product.find() // mongoose method
+        .skip((page - 1) * ITEMS_PER_PAGE) // pagination find param
+        .limit(ITEMS_PER_PAGE); // pagination page
+    })
+
     .then((products) => {
       res.render("shop/product-list.pug", {
         prods: products,
         docTitle: "Products list",
         activePath: "/products",
         isAuthenticated: req.session.isLoggedIn,
+        // pagination param
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((error) => {
